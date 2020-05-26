@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "jgantt"
+    }
+  },
+  "defaultProject": "jgantt",
+  "cli": {
+    "analytics": "0ebe7164-357a-4844-bdc3-8490f26e8e49"
+  }
 }
