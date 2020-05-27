@@ -14,13 +14,14 @@ body{
 .grid {
     display: grid;
     grid-gap: 0px;
-    border: 1px solid #e7e7e7;
+    border: 3px solid #e7e7e7;
     background-color: #e7e7e7;
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
     font-size: 11px;
     color: rgba(0, 0, 0, 0.54);
     width: max-content;
+    min-width: 400px;
     grid-auto-columns: minmax(100px, auto);
 }
 
@@ -44,12 +45,20 @@ body{
     cursor: pointer;
 }
 /* cell day */
-.grid .days > p > label{
+.grid .days > p > span,
+.grid .hours > p > span{
     font-weight: 600;
     color: rgba(0, 0, 0, 0.692);
     padding: 2px;
-    font-size: 13px;
+    font-size: 12px;
+    background-color: unset;
 }
+
+.grid .days:hover,
+.grid .hours:hover{
+    background-color: #ffffff;
+}
+
 
 .grid .hours > p{
     font-weight: 600;
@@ -92,6 +101,7 @@ body{
 .grid .items{
     border-top: 1px solid #e7e7e7;
     cursor: pointer;
+    
 }
 
 .grid span.items:hover
@@ -119,20 +129,46 @@ span.tasks{
 }
 
 /* tasks bar */
-.task-bar{
+.grid .task-bar{
     /* resize: both; */
-    overflow: auto;
+    font-size: 11px;
+    color: #e7e7e7;
     position: relative;
     background-color: #3f51b5;
-    height: auto;
-    margin: 5px 0px 3px 0px;
+    margin: 4px 0px 0px 0px;
     border-radius: 2px;
     width: 2px;
-    min-width: 1px;
-    cursor: move;
+    min-width: 2px;
+    
+    visibility: collapse;
 }
+
 
 /* footer */
 .grid .footer{
     background-color: #fafafa;
+}
+
+/* errors */
+
+.grid .errors{
+    /* resize: both; */
+    width: 80%;
+    background-color: black;
+    color: #ffffff;
+    padding: 3px;
+    border-radius: 2px;
+    font-size: 10px;
+    margin: auto;
+    margin-top: 5px;
+}
+
+.grid .edit{
+    display: inline-block;
+    cursor: pointer;
+    background-color: #ffffff;
+    border: 1px solid #e7e7e7;
+    padding: 10px 15px !important;
+    border-radius: 4px;
+    padding: 3px 10px 3px 10px;
 }

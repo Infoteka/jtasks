@@ -1,5 +1,8 @@
 import * as moment from 'moment';
 
+/**
+ * clas TaskSettings
+ */
 export class TaskSettings {
 
     private _projectName: string = '';
@@ -12,10 +15,10 @@ export class TaskSettings {
     private _noDataError: string = 'No data';
     private _displayDate: string = 'L';
     private _randomColor: boolean = true;
+    private _dateActive: string =  moment().set({'hour': 0, 'minute': 0, 'second': 0}).format();
+    private _barColor: string = null;
 
-    constructor(){
-        
-    }
+    constructor(){}
 
     get projectName(): string {
         return this._projectName;
@@ -35,6 +38,7 @@ export class TaskSettings {
         return this._startDate;
     }
     set startDate(value: string) {
+        value = moment(value).set({'hour': 0, 'minute': 0, 'second': 0}).format();
         this._startDate = value;
     }
 
@@ -42,6 +46,7 @@ export class TaskSettings {
         return this._endDate;
     }
     set endDate(value: string) {
+        value = moment(value).set({'hour': 23, 'minute': 59, 'second': 59}).format();
         this._endDate = value;
     }
 
@@ -89,4 +94,44 @@ export class TaskSettings {
     set randomColor(value: boolean) {
         this._randomColor = value;
     }
+
+    get dateActive(): string {
+        return this._dateActive;
+    }
+    set dateActive(value: string) {
+        value = moment(value).set({'hour': 0, 'minute': 0, 'second': 0}).format();
+        this._dateActive = value;
+    }
+
+    get barColor(): string {
+        return this._barColor;
+    }
+    
+    set barColor(value: string) {
+        this._barColor = value;
+    }
 }
+
+/**
+ * class Task
+ */
+export class Task {
+    id: any = '';
+    startDate: string = '';
+    endDate: string = '';
+}
+
+/**
+ * class Data
+ */
+export class Data {
+    key: any = '';
+    value: any = '';
+    tasks: Task[] = [];
+}
+
+export class DataList {
+    data: Data[];
+}
+
+

@@ -12,9 +12,10 @@
                 <p>{{ month }}</p>
             </span>
             <!-- header days grid -->
-            <span class="days" *ngFor="let day of days; let i2 = index;" [ngClass]="compareDate(day.date) ? 'active' : ''">
-                <p>{{ day.day_week }} 
-                    <label>{{ day.day }}</label>
+            <span class="days" *ngFor="let day of days; let i2 = index;" [ngClass]="isNow(day.date) ? 'active' : ''">
+                <p class="toogle" (click)="toggleTimeLine('hours', day.date)">
+                    {{ day.day_week }} 
+                    <span>{{ day.day }}</span>
                 </p>
             </span>
         </ng-container>
@@ -23,19 +24,20 @@
         <ng-container *ngIf="taskSettings.timeLine == 'hours'">
             <!-- header months grid -->
             <span class="day" [ngStyle]="{'grid-column': getColumnItemsLength()}">
-                <p>{{ getDateFormat(dayActive) }}</p>
+                <p [ngClass]="backButton ? 'edit' : ''" (click)="backButton && toggleTimeLine('days')">{{ getDateFormat(taskSettings.dateActive) }}</p>
             </span>
             <!-- header days grid -->
             <span class="hours" *ngFor="let hour of hours; let i2 = index;">
-                <p>{{ hour.hour }} 
-                    <!-- <label>{{ day.day }}</label> -->
+                <p>
+                    <span>{{ hour.hour }} </span>
                 </p>
             </span>
         </ng-container>
         <!-- HOURS TEMPLATE END -->
+
         <!-- containing taks -->
-        <ng-container *ngIf="data">
-            <ng-container *ngFor="let item of data; let i3 = index;">
+        <ng-container *ngIf="taskData">
+            <ng-container *ngFor="let item of taskData; let i3 = index;">
                 <!-- siderbar process grid -->
                 <span class="tasks" [ngStyle]="{'grid-column': getColumnSiderbarLength()}">
                     <p>{{ item.value }}</p>
@@ -44,23 +46,24 @@
                 <span class="items" [ngStyle]="{'grid-column': getColumnItemsLength()}">
                     <ng-container *ngIf="item.tasks">
                         <div 
-                        *ngFor="let task of item.tasks" 
-                        class="task-bar active" 
-                        [ngStyle]=" taskSettings.timeLine == 'hours' ? timeline(task.start_date, task.end_date) : timeline(task.start_date, task.end_date)" 
-                        title="{{ task.start_date }}">
-                        &nbsp;</div>
+                            *ngFor="let task of item.tasks" 
+                            class="task-bar active" 
+                            [ngStyle]="timeline(task.start_date, task.end_date, item.tasks)" 
+                            title="id: {{task.id}} start date: {{ task.start_date }}">
+                            &nbsp;<small *ngIf="task.id">#{{task.id}}</small>
+                        </div>
                     </ng-container>
                 </span>  
             </ng-container>
         </ng-container>
-        <ng-container *ngIf="!data">
+        <ng-container *ngIf="!taskData">
             <span class="error" [ngStyle]="{'grid-column': getColumnsLength()}">
                 <p>{{ taskSettings.noDataError }}</p>
             </span>
         </ng-container>
         <!-- footer -->
         <span class="footer" [ngStyle]="{'grid-column': getColumnsLength()}">
-            <p></p>
+            <p><small *ngIf="errors" class="errors">{{ errors }}</small></p>
         </span>
     </div>
 </div>

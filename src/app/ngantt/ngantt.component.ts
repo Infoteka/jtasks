@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, enableProdMode } from '@angular/core';
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { TaskSettings } from 'src/models/models';
+import { TaskSettings, Data, DataList } from 'src/models/models';
 
 @Component({
   selector: 'ngantt',
@@ -19,36 +19,41 @@ export class NganttComponent implements OnInit {
   now: any;
   minutes_cell: number = 0;
   taskSettings: TaskSettings;
+  taskData: Data[];
+
   numColumn: number = 0;
-  dayActive: any;
+  backButton: boolean = false;
+  errors: string = null;
   
-  constructor() {
-    this.dayActive = moment('2020-05-26').format();
-  }
+  constructor() {}
 
   ngOnInit(): void {
     
     this.taskSettings = Object.assign(new TaskSettings(), this.settings);
+    this.taskData = Object.assign([new Data], this.data);
     moment.locale(this.taskSettings.locale);
     this.init();
   }
 
   init(){
+    this.errors = null;
     if(this.taskSettings.timeLine == 'hours'){
-      this.loadCalendarHours();
+      this.getHours();
       this.minutes_cell = 1440;
     }else{
-      this.loadCalendarDays();
+      this.getDays();
       this.minutes_cell = moment(this.taskSettings.startDate)
                           .diff(this.taskSettings.endDate, 'minutes', true) * -1;
       this.getMonths();
     }
   }
 
-  loadCalendarHours(){
+  // get hours
+  getHours(){
     console.log('loadCalendarHours');
+    this.hours = [];
     for(let i = 0; i <= 24; i++ ){
-      let date = moment(this.dayActive).add(i, 'hours').format();
+      let date = moment(this.taskSettings.dateActive).add(i, 'hours').format();
       let hour = moment(date).format('HH:mm');
       this.hours.push({
         'date': date, 
@@ -56,14 +61,14 @@ export class NganttComponent implements OnInit {
       });
     }
     this.numColumn = this.hours.length;
-    console.log(this.hours);
-  
   }
+
   // calendar days generate
-  loadCalendarDays(){
+  getDays(){
     console.log('loadCalendarDays');
+    this.validateRange(this.taskSettings.startDate, this.taskSettings.endDate);
     // get difference
-    
+    this.days = [];
     let diff = moment(this.taskSettings.startDate).diff(this.taskSettings.endDate, 'days') * -1;
     // generate matrix
     for(let i=0; i <= diff; i++){
@@ -90,57 +95,82 @@ export class NganttComponent implements OnInit {
     this.daysOfMonth = _.groupBy(months);
     this.months = _.intersection(months);
   }
-
   
-  timeline(start: any = null, end: any = null){
+  timeline(start: any = null, end: any = null, tasks: any[] = []){
     let css = {};
-
-    // if timeline is hours type
     let endDate = this.taskSettings.endDate;
+    // if timeline is hours type
+    let isInRange = false;
+    let dateSearch = '';
+    let startDateRange = '';
+    let endDateRange = '';
     if(this.taskSettings.timeLine == 'hours'){
-      endDate = moment(this.dayActive).set({'hour': 23, 'minute': 59, 'second': 59}).format()
-      let isActive = moment(endDate).isBetween(moment(start), moment(end), 'minute');
-      if(!isActive){
-        console.log('no esta en el rango', endDate, start, end, isActive);
-        // return css;
-      }
-      
+      endDate = moment(this.taskSettings.dateActive)
+                      .set({'hour': 23, 'minute': 59, 'second': 59}).format();
+      dateSearch = endDate;
+      startDateRange = start;
+      endDateRange = end;
+    }else{
+      dateSearch = end;
+      startDateRange = this.taskSettings.startDate;
+      endDateRange = this.taskSettings.endDate;
     }
+    // filter out the of range
+    isInRange = moment(dateSearch).set({'hour': 0, 'minute': 1, 'second': 0})
+                    .isBetween(moment(startDateRange).set({'hour': 0, 'minute': 0, 'second': 0}), 
+                                moment(endDateRange).set({'hour': 23, 'minute': 59, 'second': 59}),
+                                'minute'
+                                );
+    if(isInRange){
+      if(start){
+        let minutes_element = moment(start).diff(endDate, 'minutes', true) * -1;
+        let position_minutes = this.minutes_cell - minutes_element;
+        // maximum number to not leave the grid.
+        position_minutes = (position_minutes < 0 ) ? 0 : position_minutes;
+        // % position for timeline
+        let porcent_position = (position_minutes * 100) / this.minutes_cell;
+        // get width
+        let percent_width = 0;
+        let diff = 0;
+        let position_minutes_end = 0;
+        if(end){
+          let minutes_element_end = (moment(end).diff(endDate, 'minutes', true) * -1) ;
+          position_minutes_end = this.minutes_cell - minutes_element_end;
+          // maximum number to not leave the grid (right).
+          position_minutes_end = (position_minutes_end > this.minutes_cell) ? this.minutes_cell : position_minutes_end;
+          diff = position_minutes_end - position_minutes;
+          percent_width = diff * 100 / this.minutes_cell;
+        }
+        let color = this.taskSettings.randomColor ? this.getRandomColor() : '';
+        color = this.taskSettings.barColor ? this.taskSettings.barColor : color;
+        let num_task = 75 / tasks.length;
+        console.log(num_task);
+        css = {
+          'left': porcent_position + '%',
+          'width': percent_width + '%',
+          'background-color': color,
+          'visibility': 'visible',
+          'height': num_task + '%'
+        }
+        // console.log('minutes cell', this.minutes_cell, ' => 100%');
+        // console.log('element minutes 1', minutes_element);
+        // console.log('position', position_minutes);
+        // console.log('position end', position_minutes_end);
+        // console.log('diff start-end (diff)', diff);
+        // console.log('percent width', percent_width);
+        // console.log('porcent_position', porcent_position);
+      }
 
-    if(start){
-      let minutes_element = moment(start).diff(endDate, 'minutes', true) * -1;
-      let position_minutes = this.minutes_cell - minutes_element;
-      // maximum number to not leave the grid.
-      position_minutes = (position_minutes < 0 ) ? 0 : position_minutes;
-      // % position for timeline
-      let porcent_position = (position_minutes * 100) / this.minutes_cell;
-      // get width
-      let percent_width = 0;
-      let diff = 0;
-      let position_minutes_end = 0;
-      if(end){
-        let minutes_element_end = (moment(end).diff(endDate, 'minutes', true) * -1) ;
-        position_minutes_end = this.minutes_cell - minutes_element_end;
-        // maximum number to not leave the grid (right).
-        position_minutes_end = (position_minutes_end > this.minutes_cell) ? this.minutes_cell : position_minutes_end;
-        diff = position_minutes_end - position_minutes;
-        percent_width = diff * 100 / this.minutes_cell;
-      }
-      let color = this.taskSettings.randomColor ? this.getRandomColor() : '';
-      css = {
-        'left': porcent_position + '%',
-        'width': percent_width + '%',
-        'background-color': color,
-      }
-      // console.log('minutes cell', this.minutes_cell, ' => 100%');
-      // console.log('element minutes 1', minutes_element);
-      // console.log('position', position_minutes);
-      // console.log('position end', position_minutes_end);
-      // console.log('diff start-end (diff)', diff);
-      // console.log('percent width', percent_width);
-      // console.log('porcent_position', porcent_position);
     }
+    
     return css;
+  }
+
+  validateRange(startDate: string, endDate: string){
+    if(moment(startDate) > moment(endDate)){
+      this.errors = "error in the date range, please check and try again.";
+    }
+    console.log(startDate, endDate);
   }
 
   getRandomColor() {
@@ -150,8 +180,12 @@ export class NganttComponent implements OnInit {
 
   /* use in html */
 
-  toggleTimeLine(timeline: string){
-    this.taskSettings.timeLine = '';
+  toggleTimeLine(timeline: string, day: any = null){
+    if(timeline=='hours'){
+      this.taskSettings.dateActive = day;
+      this.backButton = true;
+    }
+    this.taskSettings.timeLine = timeline;
     this.init();
   }
 
@@ -183,7 +217,7 @@ export class NganttComponent implements OnInit {
     return 'span ' + this.numColumn;
   }
 
-  compareDate(initialDate: string, secondDate: string = null){
+  isNow(initialDate: string, secondDate: string = null){
     let diff = false;
     if(!secondDate){
       diff = (moment(initialDate).format('DDMMYYYY') == moment().format('DDMMYYYY')) ? true : false;
