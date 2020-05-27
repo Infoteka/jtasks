@@ -16,6 +16,10 @@
       "dom"
     ],
     "paths": {
+      "tasks": [
+        "dist/tasks/tasks",
+        "dist/tasks"
+      ]
     }
   },
   "angularCompilerOptions": {

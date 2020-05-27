@@ -123,6 +123,46 @@
           }
         }
       }
+    },
+    "tasks": {
+      "projectType": "library",
+      "root": "projects/tasks",
+      "sourceRoot": "projects/tasks/src",
+      "prefix": "aks",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/tasks/tsconfig.lib.json",
+            "project": "projects/tasks/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tasks/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/tasks/src/test.ts",
+            "tsConfig": "projects/tasks/tsconfig.spec.json",
+            "karmaConfig": "projects/tasks/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/tasks/tsconfig.lib.json",
+              "projects/tasks/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "jgantt",

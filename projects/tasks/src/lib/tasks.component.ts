@@ -1,17 +1,19 @@
 import { Component, OnInit, Input } from '@angular/core';
-import * as moment from 'moment';
 import * as _ from 'lodash';
-import { TaskSettings, Data, DataList } from 'src/models/models';
+import { TaskSettings, Data } from './models';
+import * as moment_ from 'moment';
+const moment = moment_;
 
 @Component({
-  selector: 'ngantt',
-  templateUrl: './ngantt.component.html',
-  styleUrls: ['./ngantt.component.scss']
+  selector: 'aks-tasks',
+  templateUrl: './tasks.component.html', 
+  styleUrls: ['./tasks.component.scss']
 })
-export class NganttComponent implements OnInit {
+export class TasksComponent implements OnInit {
   @Input() settings: any;
   @Input() data: any;
 
+  
   months: any;
   days: any[] = [];
   hours: any[] = [];
@@ -24,11 +26,10 @@ export class NganttComponent implements OnInit {
   numColumn: number = 0;
   backButton: boolean = false;
   errors: string = null;
-  
-  constructor() {}
+
+  constructor() { }
 
   ngOnInit(): void {
-    
     this.taskSettings = Object.assign(new TaskSettings(), this.settings);
     this.taskData = Object.assign([new Data], this.data);
     moment.locale(this.taskSettings.locale);
@@ -224,5 +225,6 @@ export class NganttComponent implements OnInit {
     }
     return diff;
   }
+
 
 }
