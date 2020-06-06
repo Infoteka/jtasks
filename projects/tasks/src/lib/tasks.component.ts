@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { TaskSettings, Data } from './models';
 import * as moment_ from 'moment';
@@ -13,30 +13,38 @@ export class TasksComponent implements OnInit {
   @Input() settings: any;
   @Input() data: any;
 
-  
   months: any;
   days: any[] = [];
   hours: any[] = [];
   daysOfMonth: any;
   now: any;
   minutes_cell: number = 0;
-  taskSettings: TaskSettings;
-  taskData: Data[];
 
   numColumn: number = 0;
   backButton: boolean = false;
   errors: string = null;
 
-  constructor() { }
+  taskSettings: TaskSettings;
+  taskData = [new Data];
+  
+  constructor() {}
 
-  ngOnInit(): void {
-    this.taskSettings = Object.assign(new TaskSettings(), this.settings);
-    this.taskData = Object.assign([new Data], this.data);
-    moment.locale(this.taskSettings.locale);
+  ngOnChanges(changes: SimpleChanges) {
+
+    console.log(changes);
+    this.taskSettings =  (changes.settings) ? 
+                          Object.assign(new TaskSettings(), changes.settings.currentValue) 
+                          : this.taskSettings;
+    this.taskData = (changes.data) ? 
+                    Object.assign([new Data], changes.data.currentValue) 
+                    : this.taskData;
+    moment.locale(this.taskSettings['locale']);
     this.init();
   }
 
-  init(){
+  ngOnInit(): void {}
+
+  public init(){
     this.errors = null;
     if(this.taskSettings.timeLine == 'hours'){
       this.getHours();
@@ -145,7 +153,7 @@ export class TasksComponent implements OnInit {
         let color = this.taskSettings.randomColor ? this.getRandomColor() : '';
         color = this.taskSettings.barColor ? this.taskSettings.barColor : color;
         let num_task = 75 / tasks.length;
-        console.log(num_task);
+        // console.log(num_task);
         css = {
           'left': porcent_position + '%',
           'width': percent_width + '%',

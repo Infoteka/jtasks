@@ -1,5 +1,7 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
+<input type="datetime-local" name="fecha" [(ngModel)]="fecha" (change)="cambia()">
+<!-- <a href="javascript:;" (click)="cambia()">cambia</a> -->
 <div style="padding: 20px; color: #ffffff">
   Planificación Semana
 </div>
@@ -17,10 +19,10 @@
 >
 </ngantt>
 
-<aks-tasks
+<!-- <aks-tasks
   [settings]="settings2"
   [data]="data"
 >
-</aks-tasks>
+</aks-tasks> -->
 
 <!-- <router-outlet></router-outlet> -->

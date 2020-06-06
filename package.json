@@ -11,7 +11,7 @@
     "lib:build": "ng-packagr -p projects/tasks/ng-package.json",
     "lib:package": "cd dist && npm pack"
   },
-  "private": true,
+  "private": false,
   "dependencies": {
     "@angular/animations": "~9.1.9",
     "@angular/common": "~9.1.9",

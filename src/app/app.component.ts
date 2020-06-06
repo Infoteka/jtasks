@@ -1,5 +1,6 @@
-import { Component, enableProdMode } from '@angular/core';
+import { Component, enableProdMode, Input, ViewChild } from '@angular/core';
 import * as moment from 'moment';
+import { NganttComponent } from './ngantt/ngantt.component';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +9,7 @@ import * as moment from 'moment';
 })
 export class AppComponent {
   title = 'jgantt';
+  @Input()fecha: any;
 
   settings1 = {
     startDate: moment().add(-12, 'day').format(),
@@ -18,14 +20,7 @@ export class AppComponent {
     randomColor: true
   }
 
-  settings2 = {
-    locale: 'es',
-    timeLine: 'hours',
-    projectName: 'En Horas',
-    displayDate: 'dddd DD MMMM YYYY',
-    dateActive: moment().add(1, 'day').format(),
-    
-  }
+  settings2: any;
 
   data: any[] = [
     { key: 1, value: 'JLMJ89'},
@@ -48,7 +43,28 @@ export class AppComponent {
   // ]
 
   constructor(){
-    
+    this.settings2 = {
+      locale: 'es',
+      timeLine: 'hours',
+      projectName: 'En Horas...',
+      displayDate: 'dddd DD MMMM YYYY',
+      dateActive: moment().format(),
+    }
+  }
+
+
+
+  async cambia(){
+    console.log('fecha', this.fecha);
+    this.settings2 = {
+      locale: 'es',
+      timeLine: 'hours',
+      projectName: 'En Horas',
+      displayDate: 'dddd DD MMMM YYYY',
+      dateActive: moment(this.fecha).format(),
+    }
+    // console.log('cambia', this.settings2);
+    // this.tasks.init();
   }
 
 }

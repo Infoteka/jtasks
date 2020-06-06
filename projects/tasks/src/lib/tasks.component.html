@@ -18,7 +18,7 @@
                     <span>{{ day.day }}</span>
                 </p>
             </span>
-        </ng-container>
+        </ng-container>    
         <!-- DAYS TEMPLATE END -->
         <!-- HOURS TEMPLATE -->
         <ng-container *ngIf="taskSettings.timeLine == 'hours'">
@@ -34,7 +34,6 @@
             </span>
         </ng-container>
         <!-- HOURS TEMPLATE END -->
-
         <!-- containing taks -->
         <ng-container *ngIf="taskData">
             <ng-container *ngFor="let item of taskData; let i3 = index;">

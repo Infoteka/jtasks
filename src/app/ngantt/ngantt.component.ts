@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, SimpleChanges } from '@angular/core';
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { TaskSettings, Data, DataList } from 'src/models/models';
+import { TaskSettings, Data, DataList, Task } from 'src/models/models';
 
 @Component({
   selector: 'ngantt',
@@ -18,24 +18,32 @@ export class NganttComponent implements OnInit {
   daysOfMonth: any;
   now: any;
   minutes_cell: number = 0;
-  taskSettings: TaskSettings;
-  taskData: Data[];
 
   numColumn: number = 0;
   backButton: boolean = false;
   errors: string = null;
+
+  taskSettings: TaskSettings;
+  taskData = [new Data];
   
   constructor() {}
 
-  ngOnInit(): void {
-    
-    this.taskSettings = Object.assign(new TaskSettings(), this.settings);
-    this.taskData = Object.assign([new Data], this.data);
-    moment.locale(this.taskSettings.locale);
+  ngOnChanges(changes: SimpleChanges) {
+
+    console.log(changes);
+    this.taskSettings =  (changes.settings) ? 
+                          Object.assign(new TaskSettings(), changes.settings.currentValue) 
+                          : this.taskSettings;
+    this.taskData = (changes.data) ? 
+                    Object.assign([new Data], changes.data.currentValue) 
+                    : this.taskData;
+    moment.locale(this.taskSettings['locale']);
     this.init();
   }
 
-  init(){
+  ngOnInit(): void {}
+
+  public init(){
     this.errors = null;
     if(this.taskSettings.timeLine == 'hours'){
       this.getHours();
@@ -50,7 +58,7 @@ export class NganttComponent implements OnInit {
 
   // get hours
   getHours(){
-    console.log('loadCalendarHours');
+    // console.log('loadCalendarHours');
     this.hours = [];
     for(let i = 0; i <= 24; i++ ){
       let date = moment(this.taskSettings.dateActive).add(i, 'hours').format();
@@ -65,7 +73,7 @@ export class NganttComponent implements OnInit {
 
   // calendar days generate
   getDays(){
-    console.log('loadCalendarDays');
+    // console.log('loadCalendarDays');
     this.validateRange(this.taskSettings.startDate, this.taskSettings.endDate);
     // get difference
     this.days = [];
@@ -186,7 +194,7 @@ export class NganttComponent implements OnInit {
       this.backButton = true;
     }
     this.taskSettings.timeLine = timeline;
-    this.init();
+    
   }
 
   getDateFormat(date: any, format: string = null){
